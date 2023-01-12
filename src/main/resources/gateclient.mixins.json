@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.thef1xer.gateclient.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [],
+  "client": [
+    "ClientPlayNetworkHandlerMixin",
+    "KeyBindingMixin",
+    "PlayerMoveC2SPacketAccessor",
+    "VehicleMoveC2SPacketAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
