@@ -18,7 +18,7 @@ public class ClientPlayNetworkHandlerMixin {
         if (packet instanceof PlayerMoveC2SPacket) {
             ModuleEventHandler.onPlayerMoveC2SPacket((PlayerMoveC2SPacket) packet);
         } else if (packet instanceof VehicleMoveC2SPacket) {
-            ModuleEventHandler.onVehicleMoveC2SPacketAccessor((VehicleMoveC2SPacket) packet);
+            ModuleEventHandler.onVehicleMoveC2SPacket((VehicleMoveC2SPacket) packet);
         }
 
     }

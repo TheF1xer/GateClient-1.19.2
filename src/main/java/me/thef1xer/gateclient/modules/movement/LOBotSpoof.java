@@ -1,4 +1,4 @@
-package me.thef1xer.gateclient.modules.player;
+package me.thef1xer.gateclient.modules.movement;
 
 import me.thef1xer.gateclient.mixin.PlayerMoveC2SPacketAccessor;
 import me.thef1xer.gateclient.mixin.VehicleMoveC2SPacketAccessor;
@@ -9,7 +9,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class LOBotSpoof extends Module {
     public LOBotSpoof() {
-        super("LO's Bot Spoof", "lobotspoof", GLFW.GLFW_KEY_M, ModuleCategory.PLAYER);
+        super("LO's Bot Spoof", "lobotspoof", GLFW.GLFW_KEY_M, ModuleCategory.MOVEMENT);
     }
 
     public void onPlayerMoveC2SPacket(PlayerMoveC2SPacket packet) {
@@ -20,7 +20,7 @@ public class LOBotSpoof extends Module {
         }
     }
 
-    public void onVehicleMoveC2SPacketAccessor(VehicleMoveC2SPacket packet) {
+    public void onVehicleMoveC2SPacket(VehicleMoveC2SPacket packet) {
         double[] spoofedPos = spoofPosition(packet.getX(), packet.getZ());
         ((VehicleMoveC2SPacketAccessor) packet).setX(spoofedPos[0]);
         ((VehicleMoveC2SPacketAccessor) packet).setZ(spoofedPos[1]);

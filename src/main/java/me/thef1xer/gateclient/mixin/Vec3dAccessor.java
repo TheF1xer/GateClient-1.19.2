@@ -1,16 +1,17 @@
 package me.thef1xer.gateclient.mixin;
 
-import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(PlayerMoveC2SPacket.class)
-public interface PlayerMoveC2SPacketAccessor {
+@Mixin(Vec3d.class)
+public interface Vec3dAccessor {
 
     @Mutable
     @Accessor("x")
     void setX(double x);
+
 
     @Mutable
     @Accessor("y")
