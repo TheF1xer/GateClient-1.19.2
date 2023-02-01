@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class NoMoveEvent extends Module {
     private final float EVENT_CONST = 1F / 16;
     private final MinecraftClient mc = MinecraftClient.getInstance();
-    private int ticksSinceLastReset = 0;
+    private int ticksSinceLastMove = 0;
 
     public final IntSetting tickDelay = addSetting(new IntSetting("Tick Delay", "tickdelay", 10, 0, 20));
 
@@ -34,8 +34,21 @@ public class NoMoveEvent extends Module {
         final double[] horizontalVec = PlayerUtil.getPlayerHorizontalMoveVec();
         double verticalMovement = calculateVerticalMovement();
 
+        callbackInfo.cancel();              // Cancel the sending of normal packets while module is active
+
+        // Send a big movement packet that will get cancelled serverside and will reset
+        // the player's last position
+        if (ticksSinceLastMove == 0) {
+            mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(
+                    mc.player.getX(),
+                    mc.player.getY() + 1337,
+                    mc.player.getZ(),
+                    true
+            ));
+        }
+
         // Send small movement packet than will not trigger a Paper PlayerMoveEvent serverside
-        if (ticksSinceLastReset == tickDelay.getValue()) {
+        if (ticksSinceLastMove >= tickDelay.getValue()) {
             mc.player.setPosition(
                     mc.player.getX() + horizontalVec[0] * EVENT_CONST * 0.8D,
                     mc.player.getY() + verticalMovement,
@@ -48,23 +61,12 @@ public class NoMoveEvent extends Module {
                     mc.player.getZ(),
                     true
             ));
+
+            ticksSinceLastMove = 0;
+            return;
         }
 
-        // Send a big movement packet that will get cancelled serverside and will reset
-        // the player's last position
-        if (ticksSinceLastReset > 2 * tickDelay.getValue()) {
-            mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(
-                    mc.player.getX(),
-                    mc.player.getY() + 1337,
-                    mc.player.getZ(),
-                    true
-            ));
-
-            ticksSinceLastReset = 0;
-        }
-
-        ticksSinceLastReset++;
-        callbackInfo.cancel();              // Cancel the sending of normal packets
+        ticksSinceLastMove++;
     }
 
     private double calculateVerticalMovement() {

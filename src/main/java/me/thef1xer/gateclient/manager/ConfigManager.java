@@ -21,7 +21,7 @@ public class ConfigManager {
     public void save() {
         JsonObject configJson = new JsonObject();
         configJson.addProperty("active_profile", (new File(DirectoryUtil.PROFILE_FOLDER, "default.json")).toString());
-        configJson.addProperty("prefix", ".");
+        configJson.addProperty("prefix", ":");
 
         try {
             FileWriter writer = new FileWriter(CONFIG_FILE);
