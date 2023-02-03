@@ -90,6 +90,10 @@ public class Module {
         return setting;
     }
 
+    public List<Setting> getSettings() {
+        return settings;
+    }
+
     public enum ModuleCategory {
         COMBAT("Combat", 0xE54343),
         HUD("HUD", 0xDC33E4),

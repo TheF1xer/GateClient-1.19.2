@@ -21,7 +21,7 @@ public class ConfigManager {
     public void save() {
         JsonObject configJson = new JsonObject();
         configJson.addProperty("active_profile", (new File(DirectoryUtil.PROFILE_FOLDER, "default.json")).toString());
-        configJson.addProperty("prefix", ":");
+        configJson.addProperty("prefix", GateClient.getGateClient().commandManager.getPrefix());
 
         try {
             FileWriter writer = new FileWriter(CONFIG_FILE);
@@ -54,6 +54,10 @@ public class ConfigManager {
         // Read JSON
         for (Map.Entry<String, JsonElement> entry : configObj.entrySet()) {
             System.out.println(entry.getKey() + " " + entry.getValue().getAsString());
+
+            if (entry.getKey().equals("prefix")) {
+                GateClient.getGateClient().commandManager.setPrefix(entry.getValue().getAsString());
+            }
         }
 
         save();         // Save after loading to make sure config file is up-to-date

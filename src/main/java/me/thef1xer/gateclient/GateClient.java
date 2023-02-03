@@ -1,5 +1,6 @@
 package me.thef1xer.gateclient;
 
+import me.thef1xer.gateclient.manager.CommandManager;
 import me.thef1xer.gateclient.manager.ConfigManager;
 import me.thef1xer.gateclient.manager.ModuleManager;
 import me.thef1xer.gateclient.manager.ProfileManager;
@@ -15,6 +16,7 @@ public class GateClient implements ModInitializer {
 	public final ModuleManager moduleManager = new ModuleManager();
 	public final ConfigManager configManager = new ConfigManager();
 	public final ProfileManager profileManager = new ProfileManager();
+	public final CommandManager commandManager = new CommandManager();
 
 	public static GateClient getGateClient() {
 		return GateClient.gateClient;

@@ -1,6 +1,6 @@
 package me.thef1xer.gateclient.mixin;
 
-import me.thef1xer.gateclient.handlers.ModuleEventHandler;
+import me.thef1xer.gateclient.handlers.ClientEventHandler;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,6 +13,6 @@ public class KeyBindingMixin {
 
     @Inject(at = @At("HEAD"), method = "onKeyPressed(Lnet/minecraft/client/util/InputUtil$Key;)V")
     private static void onKeyPressed(InputUtil.Key key, CallbackInfo callbackInfo) {
-        ModuleEventHandler.onKeyPressed(key);
+        ClientEventHandler.onKeyPressed(key);
     }
 }
