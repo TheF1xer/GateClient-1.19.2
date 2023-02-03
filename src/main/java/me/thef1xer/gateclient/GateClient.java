@@ -30,6 +30,8 @@ public class GateClient implements ModInitializer {
 		this.moduleManager.init();
 		this.configManager.init();
 		this.profileManager.init();
+		this.commandManager.init();
+
 		GateClient.LOGGER.info(GateClient.NAME + " initialized");
 	}
 }

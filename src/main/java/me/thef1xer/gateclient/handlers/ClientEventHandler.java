@@ -2,6 +2,7 @@ package me.thef1xer.gateclient.handlers;
 
 import me.thef1xer.gateclient.GateClient;
 import me.thef1xer.gateclient.modules.Module;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -14,6 +15,8 @@ public class ClientEventHandler {
             final int prefixLen = GateClient.getGateClient().commandManager.getPrefix().length();
             String[] args = chatText.substring(prefixLen).split("\\s+");    // Split on multiple spaces too
             GateClient.getGateClient().commandManager.processCommand(args);
+
+            MinecraftClient.getInstance().inGameHud.getChatHud().addToMessageHistory(chatText);
 
             callbackInfoReturnable.setReturnValue(true);                        // Closes Chat GUI
             callbackInfoReturnable.cancel();
