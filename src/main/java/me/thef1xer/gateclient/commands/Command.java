@@ -1,7 +1,6 @@
 package me.thef1xer.gateclient.commands;
 
 import me.thef1xer.gateclient.commands.nodes.StringNode;
-import me.thef1xer.gateclient.utils.ChatUtil;
 
 public class Command {
     private final CommandNode node;
@@ -20,14 +19,6 @@ public class Command {
     }
 
     public void executeCommand(String[] args) {
-        if (node.passArguments(args, 0)) {
-            return;
-        }
-
-        syntaxError();
-    }
-
-    public void syntaxError() {
-        ChatUtil.clientMessage("syntax");
+        node.passArguments(args, 0);
     }
 }

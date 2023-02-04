@@ -1,6 +1,7 @@
 package me.thef1xer.gateclient.commands;
 
 import me.thef1xer.gateclient.utils.ChatUtil;
+import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ public abstract class CommandNode {
 
     public CommandNode(String name) {
         this.name = name;
-        this.consumer = s -> ChatUtil.clientMessage("Syntax error");
+        this.consumer = null;
     }
 
     public String getName() {
@@ -36,17 +37,37 @@ public abstract class CommandNode {
 
         if (!isNode(args[argIndex])) return false;
 
+        // Last stop
         if (argIndex == args.length - 1) {
-            consumer.accept(args[argIndex]);
+            if (consumer == null) {
+                syntaxError(args, argIndex);
+            } else {
+                consumer.accept(args[argIndex]);
+            }
+
             return true;
         }
 
+        // More children to check
         for (CommandNode childrenNode : children) {
             if (childrenNode.passArguments(args, argIndex + 1)) {
                 return true;
             }
         }
 
-        return false;
+        // More args than children
+        syntaxError(args, argIndex + 1);
+        return true;
+    }
+
+    private void syntaxError(String[] args, int argIndex) {
+        StringBuilder syntaxMessage = new StringBuilder("Syntax error at: ");
+
+        for (int i = 0; i < argIndex; i++) {
+            syntaxMessage.append(args[i]).append(" ");
+        }
+        syntaxMessage.append(Formatting.BOLD).append(args[argIndex]);     // Important one should be bold
+
+        ChatUtil.clientError(syntaxMessage.toString());
     }
 }

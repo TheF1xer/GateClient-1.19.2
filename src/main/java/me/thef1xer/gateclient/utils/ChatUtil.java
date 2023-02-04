@@ -11,4 +11,9 @@ public class ChatUtil {
         message = Formatting.GRAY + "[" + Formatting.BLUE + GateClient.NAME + Formatting.GRAY + "] " + Formatting.RESET + message;
         MinecraftClient.getInstance().player.sendMessage(Text.literal(message));
     }
+
+    public static void clientError(String message) {
+        message = Formatting.GRAY + "[" + Formatting.BLUE + GateClient.NAME + Formatting.GRAY + "] " + Formatting.RED + message;
+        MinecraftClient.getInstance().player.sendMessage(Text.literal(message));
+    }
 }

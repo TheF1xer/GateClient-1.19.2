@@ -3,7 +3,6 @@ package me.thef1xer.gateclient.manager;
 import me.thef1xer.gateclient.commands.Command;
 import me.thef1xer.gateclient.commands.impl.SayCommand;
 import me.thef1xer.gateclient.utils.ChatUtil;
-import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ public class CommandManager {
             }
         }
 
-        ChatUtil.clientMessage(Formatting.RED + "Command not found");
+        ChatUtil.clientError("Command not found");
     }
 
     public String getPrefix() {
