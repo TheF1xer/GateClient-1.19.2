@@ -7,50 +7,63 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public abstract class CommandNode {
+public abstract class CommandNode<T> {
     private final String name;
-    private Consumer<String> consumer;
-    private final List<CommandNode> children = new ArrayList<>();
+    private T parseResult;
+    private Consumer<List<CommandNode<?>>> consumer;
+    private final List<CommandNode<?>> children = new ArrayList<>();
 
     public CommandNode(String name) {
         this.name = name;
         this.consumer = null;
+        this.parseResult = null;
     }
 
     public String getName() {
         return name;
     }
 
-    public void executes(Consumer<String> consumer) {
-        this.consumer = consumer;
+    public void setParseResult(T parseResult) {
+        this.parseResult = parseResult;
     }
 
-    public CommandNode then(CommandNode newNode) {
+    public T getParseResult() {
+        return parseResult;
+    }
+
+    public CommandNode<T> executes(Consumer<List<CommandNode<?>>> consumer) {
+        this.consumer = consumer;
+        return this;
+    }
+
+    public <S> CommandNode<S> then(CommandNode<S> newNode) {
         children.add(newNode);
         return newNode;
     }
 
-    public abstract boolean isNode(String s);
+    public abstract boolean tryParse(String s);
 
-    public boolean passArguments(String[] args, int argIndex) {
+    public boolean passArguments(String[] args, int argIndex, List<CommandNode<?>> nodeList) {
         /* Returns true if the passed arguments coincide with a node */
 
-        if (!isNode(args[argIndex])) return false;
+        if (!tryParse(args[argIndex])) return false;
+
+        nodeList.add(this);                     // Add current node if successfully parsed
 
         // Last stop
         if (argIndex == args.length - 1) {
             if (consumer == null) {
                 syntaxError(args, argIndex);
             } else {
-                consumer.accept(args[argIndex]);
+                consumer.accept(nodeList);
             }
 
             return true;
         }
 
         // More children to check
-        for (CommandNode childrenNode : children) {
-            if (childrenNode.passArguments(args, argIndex + 1)) {
+        for (CommandNode<?> childrenNode : children) {
+            if (childrenNode.passArguments(args, argIndex + 1, nodeList)) {
                 return true;
             }
         }

@@ -21,11 +21,15 @@ public class Setting {
         return "";
     }
 
-    public String saveAsString() {
+    public String valueAsString() {
         return "";
     }
 
-    public boolean loadFromString(String s) {
+    public boolean canLoadFromString(String s) {
         return true;
+    }
+
+    public void loadFromString(String s) {
+
     }
 }

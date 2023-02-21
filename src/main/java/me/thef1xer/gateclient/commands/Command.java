@@ -2,8 +2,11 @@ package me.thef1xer.gateclient.commands;
 
 import me.thef1xer.gateclient.commands.nodes.StringNode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Command {
-    private final CommandNode node;
+    private final StringNode node;
 
     public Command(String name) {
         this.node = new StringNode(name);
@@ -14,11 +17,12 @@ public class Command {
         return node.getName();
     }
 
-    public void init(CommandNode commandNode) {
+    public void init(StringNode commandNode) {
 
     }
 
     public void executeCommand(String[] args) {
-        node.passArguments(args, 0);
+        List<CommandNode<?>> nodeList = new ArrayList<>();
+        node.passArguments(args, 0, nodeList);
     }
 }

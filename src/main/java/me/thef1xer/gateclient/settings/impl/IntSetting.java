@@ -1,6 +1,7 @@
 package me.thef1xer.gateclient.settings.impl;
 
 import me.thef1xer.gateclient.settings.Setting;
+import me.thef1xer.gateclient.utils.NumberUtil;
 
 public class IntSetting extends Setting {
     private int value;
@@ -31,17 +32,17 @@ public class IntSetting extends Setting {
     }
 
     @Override
-    public String saveAsString() {
+    public String valueAsString() {
         return Integer.toString(value);
     }
 
     @Override
-    public boolean loadFromString(String s) {
-        try {
-            setValue(Integer.parseInt(s));
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
+    public boolean canLoadFromString(String s) {
+        return NumberUtil.isInt(s);
+    }
+
+    @Override
+    public void loadFromString(String s) {
+        setValue(Integer.parseInt(s));
     }
 }
