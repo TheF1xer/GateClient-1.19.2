@@ -12,4 +12,13 @@ public class NumberUtil {
             return false;
         }
     }
+
+    public static boolean isFloat(String s) {
+        try {
+            Float.parseFloat(s);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 }

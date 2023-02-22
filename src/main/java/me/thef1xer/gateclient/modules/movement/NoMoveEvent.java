@@ -2,6 +2,7 @@ package me.thef1xer.gateclient.modules.movement;
 
 import me.thef1xer.gateclient.mixin.Vec3dAccessor;
 import me.thef1xer.gateclient.modules.Module;
+import me.thef1xer.gateclient.settings.impl.FloatSetting;
 import me.thef1xer.gateclient.settings.impl.IntSetting;
 import me.thef1xer.gateclient.utils.PlayerUtil;
 import net.minecraft.client.MinecraftClient;
@@ -17,6 +18,7 @@ public class NoMoveEvent extends Module {
     private int ticksSinceLastMove = 0;
 
     public final IntSetting tickDelay = addSetting(new IntSetting("Tick Delay", "tickdelay", 10, 0, 20));
+    public final FloatSetting moveAmount = addSetting(new FloatSetting("Move Amount", "moveamount", 0.8F, 0, 1));
 
     public NoMoveEvent() {
         super("No Move Event", "nomoveevent", GLFW.GLFW_KEY_N, ModuleCategory.MOVEMENT);
@@ -50,9 +52,9 @@ public class NoMoveEvent extends Module {
         // Send small movement packet than will not trigger a Paper PlayerMoveEvent serverside
         if (ticksSinceLastMove >= tickDelay.getValue()) {
             mc.player.setPosition(
-                    mc.player.getX() + horizontalVec[0] * EVENT_CONST * 0.8D,
+                    mc.player.getX() + horizontalVec[0] * EVENT_CONST * moveAmount.getValue(),
                     mc.player.getY() + verticalMovement,
-                    mc.player.getZ() + horizontalVec[1] * EVENT_CONST * 0.8D
+                    mc.player.getZ() + horizontalVec[1] * EVENT_CONST * moveAmount.getValue()
             );
 
             mc.player.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(
@@ -73,11 +75,11 @@ public class NoMoveEvent extends Module {
         double verticalMovement = 0;
 
         if (mc.player.input.jumping) {
-            verticalMovement += EVENT_CONST * 0.8D;
+            verticalMovement += EVENT_CONST * moveAmount.getValue();
         }
 
         if (mc.player.input.sneaking) {
-            verticalMovement -= EVENT_CONST * 0.8D;
+            verticalMovement -= EVENT_CONST * moveAmount.getValue();
         }
 
         return verticalMovement;
