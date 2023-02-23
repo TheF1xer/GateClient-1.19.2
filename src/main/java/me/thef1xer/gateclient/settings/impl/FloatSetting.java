@@ -37,12 +37,12 @@ public class FloatSetting extends Setting {
     }
 
     @Override
-    public boolean canLoadFromString(String s) {
-        return NumberUtil.isFloat(s);
-    }
-
-    @Override
-    public void loadFromString(String s) {
-        setValue(Float.parseFloat(s));
+    public boolean loadFromString(String s) {
+        try {
+            setValue(Float.parseFloat(s));
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

@@ -23,6 +23,4 @@ public class ModuleSettingNode extends CommandNode<Setting> {
 
         return false;
     }
-
-    public record ModuleSettingPair(Module module, Setting setting) {}
 }

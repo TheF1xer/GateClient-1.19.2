@@ -1,21 +1,19 @@
 package me.thef1xer.gateclient.commands;
 
 import me.thef1xer.gateclient.utils.ChatUtil;
-import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class CommandNode<T> {
     private final String name;
     private T parseResult;
-    private Consumer<List<CommandNode<?>>> consumer;
+    private CommandAction action;
     private final List<CommandNode<?>> children = new ArrayList<>();
 
     public CommandNode(String name) {
         this.name = name;
-        this.consumer = null;
+        this.action = null;
         this.parseResult = null;
     }
 
@@ -31,8 +29,8 @@ public abstract class CommandNode<T> {
         return parseResult;
     }
 
-    public CommandNode<T> executes(Consumer<List<CommandNode<?>>> consumer) {
-        this.consumer = consumer;
+    public CommandNode<T> executes(CommandAction consumer) {
+        this.action = consumer;
         return this;
     }
 
@@ -43,19 +41,17 @@ public abstract class CommandNode<T> {
 
     public abstract boolean tryParse(String s);
 
-    public boolean passArguments(String[] args, int argIndex, List<CommandNode<?>> nodeList) {
+    public boolean passArguments(String[] args, int argIndex) {
         /* Returns true if the passed arguments coincide with a node */
 
         if (!tryParse(args[argIndex])) return false;
 
-        nodeList.add(this);                     // Add current node if successfully parsed
-
         // Last stop
         if (argIndex == args.length - 1) {
-            if (consumer == null) {
-                syntaxError(args, argIndex);
+            if (action == null) {
+                ChatUtil.syntaxErrorMessage(args, argIndex);
             } else {
-                consumer.accept(nodeList);
+                action.executeCommand();
             }
 
             return true;
@@ -63,24 +59,14 @@ public abstract class CommandNode<T> {
 
         // More children to check
         for (CommandNode<?> childrenNode : children) {
-            if (childrenNode.passArguments(args, argIndex + 1, nodeList)) {
+            if (childrenNode.passArguments(args, argIndex + 1)) {
                 return true;
             }
         }
 
         // More args than children
-        syntaxError(args, argIndex + 1);
+        ChatUtil.syntaxErrorMessage(args, argIndex + 1);
         return true;
     }
 
-    private void syntaxError(String[] args, int argIndex) {
-        StringBuilder syntaxMessage = new StringBuilder("Syntax error at: ");
-
-        for (int i = 0; i < argIndex; i++) {
-            syntaxMessage.append(args[i]).append(" ");
-        }
-        syntaxMessage.append(Formatting.BOLD).append(args[argIndex]);     // Important one should be bold
-
-        ChatUtil.clientError(syntaxMessage.toString());
-    }
 }

@@ -25,11 +25,7 @@ public class Setting {
         return "";
     }
 
-    public boolean canLoadFromString(String s) {
+    public boolean loadFromString(String s) {
         return true;
-    }
-
-    public void loadFromString(String s) {
-
     }
 }

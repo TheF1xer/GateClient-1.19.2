@@ -2,6 +2,7 @@ package me.thef1xer.gateclient.utils;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.util.math.MathHelper;
 
 public class PlayerUtil {
 
@@ -47,6 +48,6 @@ public class PlayerUtil {
             }
         }
 
-        return new double[] {-Math.sin(Math.toRadians(angle)), Math.cos(Math.toRadians(angle))};
+        return new double[] {-MathHelper.sin(angle * (float) Math.PI / 180), MathHelper.cos(angle * (float) Math.PI / 180)};
     }
 }

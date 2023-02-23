@@ -37,12 +37,12 @@ public class IntSetting extends Setting {
     }
 
     @Override
-    public boolean canLoadFromString(String s) {
-        return NumberUtil.isInt(s);
-    }
-
-    @Override
-    public void loadFromString(String s) {
-        setValue(Integer.parseInt(s));
+    public boolean loadFromString(String s) {
+        try {
+            setValue(Integer.parseInt(s));
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }
