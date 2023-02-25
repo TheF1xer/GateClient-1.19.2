@@ -40,7 +40,7 @@ public class SetCommand extends Command {
                 GateClient.getGateClient().profileManager.saveProfile();
 
                 ChatUtil.clientMessage(
-                        this.settingNode.getParseResult().getName() + Formatting.GRAY + " set to " + Formatting.RESET + this.valueNode.getParseResult()
+                        this.settingNode.getParseResult().getName() + Formatting.GRAY + " set to " + Formatting.RESET + Formatting.BOLD + this.valueNode.getParseResult()
                 );
                 return;
             }

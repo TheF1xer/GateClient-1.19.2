@@ -4,10 +4,19 @@ import me.thef1xer.gateclient.modules.Modules;
 import net.minecraft.entity.MovementType;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 public class ModuleEventHandler {
+
+    /* ClientConnection */
+
+    public static void onPlayerPositionLookS2CPacket(PlayerPositionLookS2CPacket packet, CallbackInfo callbackInfo) {
+        if (Modules.NO_MOVE_EVENT.isEnabled()) {
+            Modules.NO_MOVE_EVENT.onPlayerPositionLookS2CPacket(packet);
+        }
+    }
 
     /* ClientPlayerEntity */
 

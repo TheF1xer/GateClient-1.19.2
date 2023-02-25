@@ -1,7 +1,6 @@
 package me.thef1xer.gateclient.settings.impl;
 
 import me.thef1xer.gateclient.settings.Setting;
-import me.thef1xer.gateclient.utils.NumberUtil;
 
 public class FloatSetting extends Setting {
     private float value;

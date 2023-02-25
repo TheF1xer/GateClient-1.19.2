@@ -6,10 +6,12 @@
   "mixins": [],
   "client": [
     "ChatScreenMixin",
+    "ClientConnectionMixin",
     "ClientPlayNetworkHandlerMixin",
     "ClientPlayerEntityMixin",
     "KeyBindingMixin",
     "PlayerMoveC2SPacketAccessor",
+    "PlayerPositionLookS2CPacketAccessor",
     "Vec3dAccessor",
     "VehicleMoveC2SPacketAccessor"
   ],

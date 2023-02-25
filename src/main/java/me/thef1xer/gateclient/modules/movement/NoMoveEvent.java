@@ -1,13 +1,16 @@
 package me.thef1xer.gateclient.modules.movement;
 
+import me.thef1xer.gateclient.mixin.PlayerPositionLookS2CPacketAccessor;
 import me.thef1xer.gateclient.mixin.Vec3dAccessor;
 import me.thef1xer.gateclient.modules.Module;
+import me.thef1xer.gateclient.settings.impl.BooleanSetting;
 import me.thef1xer.gateclient.settings.impl.FloatSetting;
 import me.thef1xer.gateclient.settings.impl.IntSetting;
 import me.thef1xer.gateclient.utils.PlayerUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.MovementType;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
+import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -19,6 +22,7 @@ public class NoMoveEvent extends Module {
 
     public final IntSetting tickDelay = addSetting(new IntSetting("Tick Delay", "tickdelay", 10, 0, 20));
     public final FloatSetting moveAmount = addSetting(new FloatSetting("Move Amount", "moveamount", 0.8F, 0, 1));
+    public final BooleanSetting noRotation = addSetting(new BooleanSetting("No Rotation", "norotation", true));
 
     public NoMoveEvent() {
         super("No Move Event", "nomoveevent", GLFW.GLFW_KEY_N, ModuleCategory.MOVEMENT);
@@ -69,6 +73,14 @@ public class NoMoveEvent extends Module {
         }
 
         ticksSinceLastMove++;
+    }
+
+    public void onPlayerPositionLookS2CPacket(PlayerPositionLookS2CPacket packet) {
+        // TODO: find why server resets pos with some rotations
+        if (noRotation.getValue()) {
+            ((PlayerPositionLookS2CPacketAccessor) packet).setYaw(mc.player.getYaw());
+            ((PlayerPositionLookS2CPacketAccessor) packet).setPitch(mc.player.getPitch());
+        }
     }
 
     private double calculateVerticalMovement() {
