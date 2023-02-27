@@ -7,7 +7,6 @@
   "client": [
     "ChatScreenMixin",
     "ClientConnectionMixin",
-    "ClientPlayNetworkHandlerMixin",
     "ClientPlayerEntityMixin",
     "KeyBindingMixin",
     "PlayerMoveC2SPacketAccessor",

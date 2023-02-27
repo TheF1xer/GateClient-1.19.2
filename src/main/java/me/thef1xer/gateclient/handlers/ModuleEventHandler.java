@@ -12,9 +12,9 @@ public class ModuleEventHandler {
 
     /* ClientConnection */
 
-    public static void onPlayerPositionLookS2CPacket(PlayerPositionLookS2CPacket packet, CallbackInfo callbackInfo) {
+    public static void onRcvPlayerPositionLookS2CPacket(PlayerPositionLookS2CPacket packet) {
         if (Modules.NO_MOVE_EVENT.isEnabled()) {
-            Modules.NO_MOVE_EVENT.onPlayerPositionLookS2CPacket(packet);
+            Modules.NO_MOVE_EVENT.onRcvPlayerPositionLookS2CPacket(packet);
         }
     }
 
@@ -34,15 +34,19 @@ public class ModuleEventHandler {
 
     /* ClientPlayNetworkHandler */
 
-    public static void onPlayerMoveC2SPacket(PlayerMoveC2SPacket packet) {
+    public static void onSendPlayerMoveC2SPacket(PlayerMoveC2SPacket packet) {
+        if (Modules.NO_MOVE_EVENT.isEnabled()) {
+            Modules.NO_MOVE_EVENT.onSendPlayerMoveC2SPacket(packet);
+        }
+
         if (Modules.LO_BOT_SPOOF.isEnabled()) {
-            Modules.LO_BOT_SPOOF.onPlayerMoveC2SPacket(packet);
+            Modules.LO_BOT_SPOOF.onSendPlayerMoveC2SPacket(packet);
         }
     }
 
-    public static void onVehicleMoveC2SPacket(VehicleMoveC2SPacket packet) {
+    public static void onSendVehicleMoveC2SPacket(VehicleMoveC2SPacket packet) {
         if (Modules.LO_BOT_SPOOF.isEnabled()) {
-            Modules.LO_BOT_SPOOF.onVehicleMoveC2SPacket(packet);
+            Modules.LO_BOT_SPOOF.onSendVehicleMoveC2SPacket(packet);
         }
     }
 }

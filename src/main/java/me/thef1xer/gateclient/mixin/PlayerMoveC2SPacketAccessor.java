@@ -19,4 +19,12 @@ public interface PlayerMoveC2SPacketAccessor {
     @Mutable
     @Accessor("z")
     void setZ(double z);
+
+    @Mutable
+    @Accessor("pitch")
+    void setPitch(float pitch);
+
+    @Mutable
+    @Accessor("yaw")
+    void setYaw(float yaw);
 }

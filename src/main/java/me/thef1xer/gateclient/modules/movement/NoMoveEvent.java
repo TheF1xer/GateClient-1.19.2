@@ -1,5 +1,6 @@
 package me.thef1xer.gateclient.modules.movement;
 
+import me.thef1xer.gateclient.mixin.PlayerMoveC2SPacketAccessor;
 import me.thef1xer.gateclient.mixin.PlayerPositionLookS2CPacketAccessor;
 import me.thef1xer.gateclient.mixin.Vec3dAccessor;
 import me.thef1xer.gateclient.modules.Module;
@@ -75,8 +76,14 @@ public class NoMoveEvent extends Module {
         ticksSinceLastMove++;
     }
 
-    public void onPlayerPositionLookS2CPacket(PlayerPositionLookS2CPacket packet) {
-        // TODO: find why server resets pos with some rotations
+    public void onSendPlayerMoveC2SPacket(PlayerMoveC2SPacket packet)  {
+        // This fixes a bug that happens when the ClientPlayNetworkHandler::onPlayerPositionLook method
+        // would send a packet with pitch and yaw information that might trigger a PlayerMoveEvent
+        ((PlayerMoveC2SPacketAccessor) packet).setPitch(0);
+        ((PlayerMoveC2SPacketAccessor) packet).setYaw(0);
+    }
+
+    public void onRcvPlayerPositionLookS2CPacket(PlayerPositionLookS2CPacket packet) {
         if (noRotation.getValue()) {
             ((PlayerPositionLookS2CPacketAccessor) packet).setYaw(mc.player.getYaw());
             ((PlayerPositionLookS2CPacketAccessor) packet).setPitch(mc.player.getPitch());

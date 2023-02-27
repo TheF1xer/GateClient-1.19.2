@@ -12,7 +12,7 @@ public class LOBotSpoof extends Module {
         super("LO's Bot Spoof", "lobotspoof", GLFW.GLFW_KEY_M, ModuleCategory.MOVEMENT);
     }
 
-    public void onPlayerMoveC2SPacket(PlayerMoveC2SPacket packet) {
+    public void onSendPlayerMoveC2SPacket(PlayerMoveC2SPacket packet) {
         if (packet.changesPosition()) {
             double[] spoofedPos = spoofPosition(packet.getX(0), packet.getZ(0));
             ((PlayerMoveC2SPacketAccessor) packet).setX(spoofedPos[0]);
@@ -20,7 +20,7 @@ public class LOBotSpoof extends Module {
         }
     }
 
-    public void onVehicleMoveC2SPacket(VehicleMoveC2SPacket packet) {
+    public void onSendVehicleMoveC2SPacket(VehicleMoveC2SPacket packet) {
         double[] spoofedPos = spoofPosition(packet.getX(), packet.getZ());
         ((VehicleMoveC2SPacketAccessor) packet).setX(spoofedPos[0]);
         ((VehicleMoveC2SPacketAccessor) packet).setZ(spoofedPos[1]);
