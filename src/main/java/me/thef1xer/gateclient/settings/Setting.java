@@ -1,5 +1,8 @@
 package me.thef1xer.gateclient.settings;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+
 public class Setting {
     private final String name;
     private final String id;
@@ -21,8 +24,12 @@ public class Setting {
         return "";
     }
 
-    public String valueAsString() {
-        return "";
+    public JsonElement getAsJsonElement() {
+        return new JsonPrimitive("");
+    }
+
+    public void setFromJsonElement(JsonElement element) {
+
     }
 
     public boolean loadFromString(String s) {

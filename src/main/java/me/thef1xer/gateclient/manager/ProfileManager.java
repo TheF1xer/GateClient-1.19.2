@@ -1,11 +1,9 @@
 package me.thef1xer.gateclient.manager;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import me.thef1xer.gateclient.GateClient;
 import me.thef1xer.gateclient.modules.Module;
+import me.thef1xer.gateclient.settings.Setting;
 import me.thef1xer.gateclient.utils.DirectoryUtil;
 
 import java.io.*;
@@ -51,6 +49,14 @@ public class ProfileManager {
             // Fill Module Object
             moduleObject.addProperty("enabled", module.isEnabled());
             moduleObject.addProperty("keybind", module.getKeyBind());
+
+            JsonObject settingListObj = new JsonObject();
+            moduleObject.add("settings", settingListObj);
+
+            // Fill Setting Array
+            for (Setting setting : module.getSettings()) {
+                settingListObj.add(setting.getId(), setting.getAsJsonElement());
+            }
         }
 
         // Write to file
@@ -118,8 +124,25 @@ public class ProfileManager {
                         if (moduleEntry.getKey().equals("keybind")) {
                             module.setKeyBind(moduleEntry.getValue().getAsInt());
                         }
+
+                        if (moduleEntry.getKey().equals("settings")) {
+                            readSettingListObj(module, moduleEntry.getValue().getAsJsonObject());
+                        }
                     }
                 }
+            }
+        }
+    }
+
+    public void readSettingListObj(Module module, JsonObject settingListObj) {
+        for (Map.Entry<String, JsonElement> entry : settingListObj.entrySet()) {
+            for (Setting setting : module.getSettings()) {
+
+                // Setting found
+                if (setting.getId().equals(entry.getKey())) {
+                    setting.setFromJsonElement(entry.getValue());
+                }
+
             }
         }
     }

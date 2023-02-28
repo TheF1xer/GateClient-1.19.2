@@ -13,6 +13,9 @@ import me.thef1xer.gateclient.utils.ChatUtil;
 import net.minecraft.util.Formatting;
 
 public class SetCommand extends Command {
+
+    // TODO: rework before adding more complex settings
+
     public CommandNode<Module> moduleNode;
     public CommandNode<Setting> settingNode;
     public CommandNode<String> valueNode;
@@ -37,7 +40,9 @@ public class SetCommand extends Command {
         this.valueNode = this.settingNode.then(new AnyStringNode("<value>")).executes(() -> {
 
             if (this.settingNode.getParseResult().loadFromString(this.valueNode.getParseResult())) {
-                GateClient.getGateClient().profileManager.saveProfile();
+                if (GateClient.getGateClient().profileManager.getAutoSave()) {
+                    GateClient.getGateClient().profileManager.saveProfile();
+                }
 
                 ChatUtil.clientMessage(
                         this.settingNode.getParseResult().getName() + Formatting.GRAY + " set to " + Formatting.RESET + Formatting.BOLD + this.valueNode.getParseResult()

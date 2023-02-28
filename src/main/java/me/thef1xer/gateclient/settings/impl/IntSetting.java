@@ -1,7 +1,8 @@
 package me.thef1xer.gateclient.settings.impl;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import me.thef1xer.gateclient.settings.Setting;
-import me.thef1xer.gateclient.utils.NumberUtil;
 
 public class IntSetting extends Setting {
     private int value;
@@ -32,8 +33,13 @@ public class IntSetting extends Setting {
     }
 
     @Override
-    public String valueAsString() {
-        return Integer.toString(value);
+    public JsonElement getAsJsonElement() {
+        return new JsonPrimitive(value);
+    }
+
+    @Override
+    public void setFromJsonElement(JsonElement element) {
+        setValue(element.getAsInt());
     }
 
     @Override

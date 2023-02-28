@@ -1,5 +1,7 @@
 package me.thef1xer.gateclient.settings.impl;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import me.thef1xer.gateclient.settings.Setting;
 
 public class FloatSetting extends Setting {
@@ -31,8 +33,13 @@ public class FloatSetting extends Setting {
     }
 
     @Override
-    public String valueAsString() {
-        return Float.toString(value);
+    public JsonElement getAsJsonElement() {
+        return new JsonPrimitive(value);
+    }
+
+    @Override
+    public void setFromJsonElement(JsonElement element) {
+        setValue(element.getAsFloat());
     }
 
     @Override

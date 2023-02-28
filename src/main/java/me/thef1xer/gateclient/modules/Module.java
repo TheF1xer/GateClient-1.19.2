@@ -30,7 +30,9 @@ public class Module {
     }
 
     public void onEnable() {
-        GateClient.getGateClient().profileManager.saveProfile();
+        if (GateClient.getGateClient().profileManager.getAutoSave()) {
+            GateClient.getGateClient().profileManager.saveProfile();
+        }
 
         if (MinecraftClient.getInstance().player != null) {
             ChatUtil.clientMessage(name + Formatting.GRAY + " toggled " + Formatting.GREEN + "on");
@@ -79,6 +81,10 @@ public class Module {
 
     public void setKeyBind(int key) {
         this.keyBind = key;
+
+        if (GateClient.getGateClient().profileManager.getAutoSave()) {
+            GateClient.getGateClient().profileManager.saveProfile();
+        }
     }
 
     public ModuleCategory getModuleCategory() {
