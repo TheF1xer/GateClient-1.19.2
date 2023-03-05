@@ -48,6 +48,6 @@ public class PlayerUtil {
             }
         }
 
-        return new double[] {-MathHelper.sin(angle * (float) Math.PI / 180), MathHelper.cos(angle * (float) Math.PI / 180)};
+        return new double[] {-MathHelper.sin((float) Math.toRadians(angle)), MathHelper.cos((float) Math.toRadians(angle))};
     }
 }

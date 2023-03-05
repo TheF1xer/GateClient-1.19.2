@@ -24,6 +24,10 @@ public class ModuleEventHandler {
         if (Modules.NO_MOVE_EVENT.isEnabled()) {
             Modules.NO_MOVE_EVENT.onMove(movementType, movement);
         }
+
+        if (Modules.TP_REACH.isEnabled()) {
+            Modules.TP_REACH.spam();
+        }
     }
 
     public static void onSendMovementPackets(CallbackInfo callbackInfo) {
