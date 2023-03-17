@@ -1,44 +1,115 @@
 package me.thef1xer.gateclient.modules.combat;
 
 import me.thef1xer.gateclient.modules.Module;
+import me.thef1xer.gateclient.settings.impl.BooleanSetting;
+import me.thef1xer.gateclient.settings.impl.FloatSetting;
 import me.thef1xer.gateclient.utils.MathUtil;
 import me.thef1xer.gateclient.utils.RayTraceHit;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
+import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import org.lwjgl.glfw.GLFW;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Stack;
 
 public class TpReach extends Module {
+    private RayTraceHit.EntityHit targetEntity = null;
+
+    public final BooleanSetting blocksStop = addSetting(new BooleanSetting("Blocks Stop", "blocksstop", true));
+    public final FloatSetting reach = addSetting(new FloatSetting("Reach", "reach", 10, 0, 100));
+    public final FloatSetting straightDistance = addSetting(new FloatSetting("Straight Distance", "strdistance", 3, 0, 10));
+
     public TpReach() {
         super("TP Reach", "tpreach", GLFW.GLFW_KEY_K, ModuleCategory.COMBAT);
     }
 
-    public void spam() {
+    public void onTick() {
         final ClientPlayerEntity player = MinecraftClient.getInstance().player;
         final ClientWorld world = MinecraftClient.getInstance().world;
         double[] lookVec = MathUtil.getDirection(player.getYaw(), player.getPitch());
 
+        this.targetEntity = null;           // Null until entity is found
+
+        // Ray Trace target
         Vec3d startVec = player.getEyePos();
-        Vec3d endVec = startVec.add(lookVec[0] * 10, lookVec[1] * 10, lookVec[2] * 10);
+        Vec3d endVec = startVec.add(
+                lookVec[0] * reach.getValue(),
+                lookVec[1] * reach.getValue(),
+                lookVec[2] * reach.getValue()
+        );
+
         RayTraceHit.EntityHit entityHit = selectTargetEntity(startVec, endVec);
 
         if (entityHit.entity() == null) return;
 
-        BlockHitResult blockHitResult = world.raycast(new RaycastContext(startVec, entityHit.hitPos(), RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, player));
-        if (blockHitResult != null) {
-            if (blockHitResult.getType() != HitResult.Type.MISS) return;
+        // Check if blocks should stop
+        if (blocksStop.getValue()) {
+            if (isBlockBetween(startVec, entityHit.hitPos(), world, player)) return;
         }
 
-        System.out.println(entityHit.entity().getName().getString());
+        this.targetEntity = entityHit;
     }
 
-    private RayTraceHit.EntityHit selectTargetEntity(Vec3d start, Vec3d end) {
+    public void doAttack(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+        if (targetEntity == null) return;
+
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        Stack<Packet<?>> positionPacketStack = new Stack<>();
+
+        sendPacketsStraightLine(player.getPos(), targetEntity.hitPos(), straightDistance.getValue(), positionPacketStack);
+        player.networkHandler.sendPacket(PlayerInteractEntityC2SPacket.attack(targetEntity.entity(), false));
+
+        for (Packet<?> packet : positionPacketStack) {
+            MinecraftClient.getInstance().player.networkHandler.sendPacket(packet);
+        }
+
+        callbackInfoReturnable.setReturnValue(false);
+        callbackInfoReturnable.cancel();
+    }
+
+    private static void sendPacketsStraightLine(Vec3d currentPos, Vec3d hitPos, float packetDistance, Stack<Packet<?>> packetStack) {
+        final float MIN_DIST_SQUARED = 9.0F;
+        final double distToTravel = currentPos.squaredDistanceTo(hitPos) - MIN_DIST_SQUARED;
+        final Vec3d unitVec = hitPos.subtract(currentPos).normalize();
+        float currentMultiplier = 0;
+
+        while (currentMultiplier * currentMultiplier < distToTravel) {
+
+            Vec3d packetPos = currentPos.add(unitVec.multiply(currentMultiplier));
+
+            // Send packet
+            PlayerMoveC2SPacket.PositionAndOnGround packet = new PlayerMoveC2SPacket.PositionAndOnGround(
+                    packetPos.x,
+                    packetPos.y,
+                    packetPos.z,
+                    true
+            );
+
+            packetStack.push(packet);
+            MinecraftClient.getInstance().player.networkHandler.sendPacket(packet);
+
+            currentMultiplier += packetDistance;
+        }
+    }
+
+    private static boolean isBlockBetween(Vec3d start, Vec3d end, ClientWorld world, Entity entity) {
+        HitResult hitResult = world.raycast(new RaycastContext(start, end, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE, entity));
+
+        if (hitResult == null) return false;
+
+        return hitResult.getType() == HitResult.Type.BLOCK;
+    }
+
+    private static RayTraceHit.EntityHit selectTargetEntity(Vec3d start, Vec3d end) {
         final ClientPlayerEntity player = MinecraftClient.getInstance().player;
 
         Entity target = null;
@@ -46,6 +117,8 @@ public class TpReach extends Module {
 
         // Select closest entity that can be the player is looking at
         for (Entity entity : MinecraftClient.getInstance().world.getEntities()) {
+
+            // TODO: discard entities that are not in the same "quadrant"
             if (entity == player) continue;
 
             Vec3d newHitVec = rayTraceHit(start, end, entity.getBoundingBox());
@@ -60,9 +133,9 @@ public class TpReach extends Module {
         return new RayTraceHit.EntityHit(target, hitPos);
     }
 
-    private Vec3d rayTraceHit(Vec3d rayStart, Vec3d rayEnd, Box aabb) {
+    private static Vec3d rayTraceHit(Vec3d rayStart, Vec3d rayEnd, Box aabb) {
         /*
-        Algorithm based in linear algebra to determine if AABB gets hit by ray
+        Algorithm based on linear algebra to determine if AABB gets hit by ray
 
         C1 <= (lambda)(V2-V1) + V1 <= C2, 0 <= lambda <= 1
         (Not real math notation, I am "comparing" vectors)
@@ -90,7 +163,7 @@ public class TpReach extends Module {
         return null;
     }
 
-    private boolean updateLambdaIntervalOneDimension(double[] currentInterval, double rayStart, double rayEnd, double boxMin, double boxMax) {
+    private static boolean updateLambdaIntervalOneDimension(double[] currentInterval, double rayStart, double rayEnd, double boxMin, double boxMax) {
         // This function returns true if the check fails
 
         if (rayStart == rayEnd) {

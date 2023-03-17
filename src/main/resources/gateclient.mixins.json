@@ -9,6 +9,7 @@
     "ClientConnectionMixin",
     "ClientPlayerEntityMixin",
     "KeyBindingMixin",
+    "MinecraftClientMixin",
     "PlayerMoveC2SPacketAccessor",
     "PlayerPositionLookS2CPacketAccessor",
     "Vec3dAccessor",
